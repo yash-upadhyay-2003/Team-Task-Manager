@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up - Team Task Manager</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+    }
+
+    .card {
+      width: min(420px, calc(100vw - 32px));
+      background: rgba(15, 23, 42, 0.93);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 22px;
+      padding: 36px 30px;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.03em;
+      color: #fff;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      color: #fff;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 44px 14px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.96);
+      color: #e2e8f0;
+      box-sizing: border-box;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .field input:focus {
+      border-color: #2563eb;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0;
+    }
+
+    .primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: #2563eb;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 8px;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 14px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .footer a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <h1>Team Task Manager</h1>
+    <p>Create your account to get started</p>
+  </div>
+
+  <h2>Sign Up</h2>
+
+  <div class="field">
+    <label for="signupName">Full Name</label>
+    <input id="signupName" type="text" placeholder="Enter your full name" />
+  </div>
+
+  <div class="field">
+    <label for="signupEmail">Email</label>
+    <input id="signupEmail" type="email" placeholder="Enter your email" />
+  </div>
+
+  <div class="field password-wrap">
+    <label for="signupPassword">Password</label>
+    <input id="signupPassword" type="password" placeholder="Create a password" />
+    <button class="toggle" type="button" onclick="togglePassword('signupPassword')">Show</button>
+  </div>
+
+  <div class="field password-wrap">
+    <label for="signupConfirmPassword">Confirm Password</label>
+    <input id="signupConfirmPassword" type="password" placeholder="Confirm your password" />
+    <button class="toggle" type="button" onclick="togglePassword('signupConfirmPassword')">Show</button>
+  </div>
+
+  <button class="primary" onclick="signup()">Create Account</button>
+
+  <div class="footer">
+    Already have an account? <a href="/login.html">Login</a>
+  </div>
+</div>
+
+<script>
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+async function signup() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+  if (!name || !email || !password || !confirmPassword) {
+    alert('All fields are required');
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert('Passwords do not match');
+    return;
+  }
+
+  try {
+    const res = await fetch('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    if (!res.ok) {
+      let message = 'Signup failed';
+      try {
+        const errorData = await res.json();
+        message = errorData.message || message;
+      } catch (e) {}
+      alert(message);
+      return;
+    }
+
+    alert('Registered successfully');
+    window.location.href = '/login.html';
+  } catch (err) {
+    alert('Unable to complete signup. Please try again.');
+  }
+}
+</script>
+</body>
+</html>
